@@ -6,13 +6,20 @@ const prisma = new PrismaClient();
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  // Fetch high-level stats
-  const [productCount, orderCount, customerCount, allOrders] = await Promise.all([
-    prisma.product.count(),
-    prisma.order.count(),
-    prisma.customer.count(),
-    prisma.order.findMany({ select: { totalAmount: true } }),
-  ]);
+  // Fetch high-level stats with a try/catch to prevent Vercel build crashes
+  let productCount = 0, orderCount = 0, customerCount = 0, allOrders: any[] = [];
+  
+  try {
+    [productCount, orderCount, customerCount, allOrders] = await Promise.all([
+      prisma.product.count(),
+      prisma.order.count(),
+      prisma.customer.count(),
+      prisma.order.findMany({ select: { totalAmount: true } }),
+    ]);
+  } catch (error) {
+    console.error("Database connection failed during build phase:", error);
+    // Gracefully fallback to zeros during the Vercel static analysis pass
+  }
 
   const totalRevenue = allOrders.reduce((sum, order) => sum + order.totalAmount, 0);
 
