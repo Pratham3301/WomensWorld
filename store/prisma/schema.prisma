@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id              String      @id @default(cuid())
+  name            String
+  description     String
+  price           Float
+  discountPrice   Float?
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  categoryId      String
+  category        Category    @relation(fields: [categoryId], references: [id])
+  variants        Variant[]
+  images          Image[]
+  orderItems      OrderItem[]
+  relatedProducts Product[]   @relation("RelatedProducts")
+  relatedTo       Product[]   @relation("RelatedProducts")
+  reviews         Review[]
+}
+
+model Variant {
+  id         String      @id @default(cuid())
+  size       String?
+  color      String?
+  stock      Int         @default(0)
+  sku        String?
+  productId  String
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+}
+
+model Image {
+  id        String  @id @default(cuid())
+  url       String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  rating     Int
+  title      String?
+  content    String
+  author     String
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  customerName    String
+  email           String?
+  phone           String
+  address         String
+  totalAmount     Float
+  paymentStatus   String      @default("pending") // pending, paid, failed
+  orderStatus     String      @default("placed") // placed, confirmed, shipped, delivered, cancelled
+  razorpayOrderId String?
+  createdAt       DateTime    @default(now())
+  
+  customerId      String?
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  
+  items           OrderItem[]
+}
+
+model Customer {
+  id               String    @id @default(cuid())
+  firstName        String
+  lastName         String
+  email            String    @unique
+  passwordHash     String
+  phone            String?   @unique
+  isEmailVerified  Boolean   @default(false)
+  isPhoneVerified  Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  orders           Order[]
+  addresses        Address[]
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  label      String   @default("Home") // Home, Work, etc.
+  street     String
+  city       String
+  state      String
+  pincode    String
+  isDefault  Boolean  @default(false)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model OTPVerification {
+  id         String   @id @default(cuid())
+  identifier String   // email or phone number
+  otp        String
+  type       String   // "email_verification", "login", "phone_verification"
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model StoreSettings {
+  id             String @id @default("global")
+  shippingFee    Float  @default(0)
+  taxRate        Float  @default(0)
+  contactEmail   String @default("support@womensworld.com")
+  contactPhone   String @default("+919876543210")
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  orderId         String
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product @relation(fields: [productId], references: [id])
+  variantId       String?
+  variant         Variant? @relation(fields: [variantId], references: [id])
+  quantity        Int
+  priceAtPurchase Float
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+}
