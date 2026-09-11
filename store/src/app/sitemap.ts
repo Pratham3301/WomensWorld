@@ -1,19 +1,29 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
-  // Get all active products
-  const products = await prisma.product.findMany({
-    where: { isActive: true },
-    select: { id: true, createdAt: true },
-  });
+  let products: any[] = [];
+  let categories: any[] = [];
 
-  // Get all categories
-  const categories = await prisma.category.findMany({
-    select: { slug: true },
-  });
+  try {
+    // Get all active products
+    products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: { id: true, createdAt: true },
+    });
+
+    // Get all categories
+    categories = await prisma.category.findMany({
+      select: { slug: true },
+    });
+  } catch (error) {
+    console.error("Database connection failed during sitemap generation:", error);
+    // Fallback to empty arrays during Vercel build phase
+  }
 
   const productUrls = products.map((product) => ({
     url: `${baseUrl}/product/${product.id}`,

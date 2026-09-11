@@ -2,15 +2,22 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import PayOnlineClient from "./PayOnlineClient";
 
+export const dynamic = 'force-dynamic';
+
 export default async function PayOnlinePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const order = await prisma.order.findUnique({
-    where: { id },
-    include: {
-      items: { include: { product: true, variant: true } },
-    }
-  });
+  let order = null;
+  try {
+    order = await prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: { include: { product: true, variant: true } },
+      }
+    });
+  } catch(e) {
+    console.error("Database connection failed during build:", e);
+  }
 
   if (!order) return notFound();
 
