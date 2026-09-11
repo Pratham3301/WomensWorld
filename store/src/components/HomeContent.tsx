@@ -330,7 +330,7 @@ export default function HomeContent({ products }: { products: Product[] }) {
                 { id: 'all', label: 'All Items' },
                 { id: 'women', label: "Women's" },
                 { id: 'kids', label: 'Kids' },
-                { id: 'occasion', label: 'Occasion Wear' },
+                { id: 'occasion-wear', label: 'Occasion Wear' },
               ].map((tab) => (
                 <button
                   key={tab.id}
