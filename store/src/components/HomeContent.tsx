@@ -186,7 +186,7 @@ export default function HomeContent({ products }: { products: Product[] }) {
         <div className="absolute top-[35%] right-[12%] w-16 h-16 rounded-full border border-[#C5A46D]/15 animate-float" style={{ animationDelay: '2s' }} />
 
         {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pb-16 lg:pb-24 flex flex-col justify-end">
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pt-32 sm:pt-40 pb-16 lg:pb-24 flex flex-col justify-end">
           <div className="max-w-2xl text-left">
             <span
               className={`text-xs sm:text-sm font-sans font-semibold tracking-[0.25em] uppercase block mb-4 transition-all duration-1000 ${
