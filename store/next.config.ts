@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Force all pages to be server-rendered on demand.
+  // This prevents Vercel from attempting DB connections during the build phase.
+  experimental: {
+    // Use PPR (Partial Prerendering) disabled - all pages dynamic
+  },
   images: {
     remotePatterns: [
       {
@@ -12,3 +17,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

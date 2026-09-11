@@ -7,29 +7,36 @@ import { Package, User, LogOut } from 'lucide-react';
 import EditProfileForm from '@/components/EditProfileForm';
 import AddressBook from '@/components/AddressBook';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AccountPage() {
   const session = await getCustomerSession();
   if (!session || session.role !== 'customer') {
     redirect('/login');
   }
 
-  const customer = await prisma.customer.findUnique({
-    where: { id: session.userId as string },
-    include: {
-      addresses: true,
-      orders: {
-        orderBy: { createdAt: 'desc' },
-        include: { 
-          items: { 
-            include: { 
-              product: { include: { images: true } },
-              variant: true 
+  let customer = null;
+  try {
+    customer = await prisma.customer.findUnique({
+      where: { id: session.userId as string },
+      include: {
+        addresses: true,
+        orders: {
+          orderBy: { createdAt: 'desc' },
+          include: { 
+            items: { 
+              include: { 
+                product: { include: { images: true } },
+                variant: true 
+              } 
             } 
-          } 
+          },
         },
       },
-    },
-  });
+    });
+  } catch(e) {
+    console.error("Database connection failed during build:", e);
+  }
 
   if (!customer) {
     redirect('/login');

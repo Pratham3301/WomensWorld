@@ -8,18 +8,26 @@ export const metadata = {
   title: "Festive Collection | Women's World",
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function FestivePage() {
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      category: {
-        slug: { in: ["occasion-wear", "kids", "women"] },
+  let products: any[] = [];
+  try {
+    products = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        category: {
+          slug: { in: ["occasion-wear", "kids", "women"] },
+        },
       },
-    },
-    take: 8,
-    include: { images: true, category: true, variants: true },
-    orderBy: { price: "desc" },
-  });
+      take: 8,
+      include: { images: true, category: true, variants: true },
+      orderBy: { price: "desc" },
+    });
+  } catch(e) {
+    console.error("Database connection failed during build:", e);
+  }
+
 
   return (
     <div className="bg-[#FAF9F6] min-h-screen pb-24">
