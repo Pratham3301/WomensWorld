@@ -6,7 +6,7 @@ import CategoryFilters from "@/components/CategoryFilters";
 import { ChevronRight, SlidersHorizontal, Sparkles } from "lucide-react";
 import { Metadata } from "next";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -18,12 +18,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  let category = null;
-  try {
-    category = await prisma.category.findUnique({
-      where: { slug },
-    });
-  } catch(e) {}
+  const category = await prisma.category.findUnique({
+    where: { slug },
+  });
 
   if (!category) {
     return { title: 'Category Not Found' };
@@ -100,27 +97,21 @@ export default async function CategoryPage({
     }
   }
 
-  let category = null;
-  
-  try {
-    category = await prisma.category.findUnique({
-      where: { slug },
-      include: {
-        products: {
-          where: productWhere,
-          include: { images: true, category: true, variants: true },
-          orderBy:
-            sort === "price-asc"
-              ? { price: "asc" }
-              : sort === "price-desc"
-              ? { price: "desc" }
-              : { createdAt: "desc" },
-        },
+  const category = await prisma.category.findUnique({
+    where: { slug },
+    include: {
+      products: {
+        where: productWhere,
+        include: { images: true, category: true, variants: true },
+        orderBy:
+          sort === "price-asc"
+            ? { price: "asc" }
+            : sort === "price-desc"
+            ? { price: "desc" }
+            : { createdAt: "desc" },
       },
-    });
-  } catch (error) {
-    console.error("Database connection failed during build:", error);
-  }
+    },
+  });
 
   if (!category) notFound();
 

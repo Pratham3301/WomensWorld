@@ -3,17 +3,14 @@ import { notFound } from "next/navigation";
 import ProductClient from "@/components/ProductClient";
 import { Metadata } from "next";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  let product = null;
-  try {
-    product = await prisma.product.findUnique({
-      where: { id },
-      include: { images: true, category: true },
-    });
-  } catch(e) {}
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { images: true, category: true },
+  });
 
   if (!product) {
     return { title: 'Product Not Found' };
@@ -42,27 +39,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  let product = null;
-  
-  try {
-    product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        images: true,
-        category: true,
-        variants: true,
-        reviews: {
-          orderBy: { createdAt: "desc" },
-        },
-        relatedProducts: {
-          take: 4,
-          include: { images: true },
-        },
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: {
+      images: true,
+      category: true,
+      variants: true,
+      reviews: {
+        orderBy: { createdAt: "desc" },
       },
-    });
-  } catch(e) {
-    console.error("Database connection failed during build:", e);
-  }
+      relatedProducts: {
+        take: 4,
+        include: { images: true },
+      },
+    },
+  });
 
   if (!product) notFound();
 
