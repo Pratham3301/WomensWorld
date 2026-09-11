@@ -3,6 +3,8 @@ import { Package, ShoppingCart, Users, TrendingUp } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   // Fetch high-level stats
   const [productCount, orderCount, customerCount, allOrders] = await Promise.all([

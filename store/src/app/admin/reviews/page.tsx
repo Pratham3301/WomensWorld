@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { getAdminSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminReviewsPage() {
   const session = await getAdminSession();
   if (!session) {

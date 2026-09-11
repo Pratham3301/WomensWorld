@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Plus, Trash2, Eye, EyeOff, Pencil } from 'lucide-react';
 import { deleteProduct, toggleProductStatus } from '@/app/actions/product';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
     include: {

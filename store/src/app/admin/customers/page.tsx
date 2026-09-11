@@ -3,6 +3,8 @@ import { Users, Search, MoreVertical, ShieldCheck } from 'lucide-react';
 import { getAdminSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminCustomersPage() {
   const session = await getAdminSession();
   if (!session) redirect('/admin/login');

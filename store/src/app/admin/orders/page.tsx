@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { toggleProductStatus } from '@/app/actions/product';
 import OrderStatusDropdown from '@/components/OrderStatusDropdown';
 
+export const dynamic = 'force-dynamic';
+
 export default async function OrdersPage() {
   const orders = await prisma.order.findMany({
     include: {

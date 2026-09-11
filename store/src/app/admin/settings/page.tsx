@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import { Save, Truck, Receipt, Mail, Phone, Settings } from 'lucide-react';
 import { updateStoreSettings } from '@/app/actions/adminSettings';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminSettingsPage() {
   const session = await getAdminSession();
   if (!session) redirect('/admin/login');
